@@ -1,5 +1,6 @@
 import { Link, useParams } from "react-router-dom";
 import { getGenre, getAllQuestions, resolveUpdated } from "../data/index.ts";
+import { progressKey } from "../data/progress.ts";
 import type { Question } from "../types.ts";
 import Quiz from "./Quiz.tsx";
 
@@ -20,6 +21,7 @@ export default function QuizPage() {
 
   let questions: Question[];
   let title: string;
+  let recordKey: string | undefined;
 
   if (topicId) {
     const topic = genre.topics.find((t) => t.id === topicId);
@@ -38,6 +40,7 @@ export default function QuizPage() {
       updated: resolveUpdated(q, topic, genre),
     }));
     title = topic.title;
+    recordKey = progressKey(genre.id, topic.id);
   } else {
     questions = getAllQuestions(genre.id);
     title = `${genre.title} 総合`;
@@ -57,6 +60,7 @@ export default function QuizPage() {
         questions={questions}
         title={title}
         backTo={`/genre/${genre.id}`}
+        progressKey={recordKey}
       />
     </div>
   );

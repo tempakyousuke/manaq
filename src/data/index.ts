@@ -5,11 +5,7 @@
 import type { Genre, Question, QuizQuestion, Topic } from "../types.ts";
 
 /** 設問の実効的な最終更新日を解決する（question → topic → genre の順で継承） */
-export function resolveUpdated(
-  question: Question,
-  topic: Topic,
-  genre: Genre,
-): string | undefined {
+export function resolveUpdated(question: Question, topic: Topic, genre: Genre): string | undefined {
   return question.updated ?? topic.updated ?? genre.updated;
 }
 
@@ -24,11 +20,7 @@ export const genres: Genre[] = Object.entries(modules)
     const fileId = path.replace("./genres/", "").replace(".json", "");
     return { order: 999, ...data, id: data.id ?? fileId };
   })
-  .sort(
-    (a, b) =>
-      (a.order ?? 999) - (b.order ?? 999) ||
-      a.title.localeCompare(b.title, "ja"),
-  );
+  .sort((a, b) => (a.order ?? 999) - (b.order ?? 999) || a.title.localeCompare(b.title, "ja"));
 
 export function getGenre(id: string): Genre | undefined {
   return genres.find((g) => g.id === id);

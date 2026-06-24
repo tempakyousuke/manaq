@@ -16,9 +16,7 @@ export default function App() {
         <Outlet />
       </main>
       <footer className="site-footer">
-        <div className="container">
-          学んで、4択で確かめる学習サイト · ジャンルは順次追加予定
-        </div>
+        <div className="container">学んで、4択で確かめる学習サイト · ジャンルは順次追加予定</div>
       </footer>
     </div>
   );

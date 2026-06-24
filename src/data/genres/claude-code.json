@@ -399,7 +399,12 @@
         },
         {
           "question": "そのターンだけ、より深く推論させるためにプロンプトに含める語はどれ?",
-          "choices": ["ultrathink", "「もっと考えて」という普通の文", "/deepmode", "「全力で」という普通の文"],
+          "choices": [
+            "ultrathink",
+            "「もっと考えて」という普通の文",
+            "/deepmode",
+            "「全力で」という普通の文"
+          ],
           "answer": 0,
           "explanation": "`ultrathink`を含めると、そのターンだけ深い思考を促せます。普通の文章はキーワードとしては扱われません。"
         }
@@ -443,7 +448,12 @@
         },
         {
           "question": "GitHub Actionsと連携した環境で、IssueやPRからClaudeに作業を依頼する書き方はどれ?",
-          "choices": ["@claude とメンションする", "#claude と書く", "/github と打つ", "メールを送る"],
+          "choices": [
+            "@claude とメンションする",
+            "#claude と書く",
+            "/github と打つ",
+            "メールを送る"
+          ],
           "answer": 0,
           "explanation": "GitHub連携では、コメントで`@claude`とメンションして作業を依頼できます。"
         }
@@ -639,12 +649,7 @@
         },
         {
           "question": "承認の頻度を減らすため、安全なコマンドをあらかじめ許可しておく設定はどれ?",
-          "choices": [
-            "permissions.allow",
-            "permissions.deny",
-            "env",
-            "model"
-          ],
+          "choices": ["permissions.allow", "permissions.deny", "env", "model"],
           "answer": 0,
           "explanation": "`permissions.allow`に登録したコマンドは承認なしで実行されます。禁止は`permissions.deny`です。"
         }

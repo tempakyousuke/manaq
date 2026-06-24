@@ -1,10 +1,12 @@
 import { Link, useParams } from "react-router-dom";
 import { getTopic } from "../data/index.ts";
+import { MASTERY_META, masteryOf, useTopicProgress } from "../data/progress.ts";
 import RichText from "./RichText.tsx";
 
 export default function TopicView() {
   const { genreId, topicId } = useParams();
   const found = genreId && topicId ? getTopic(genreId, topicId) : undefined;
+  const progress = useTopicProgress(genreId ?? "", topicId ?? "");
 
   if (!found) {
     return (
@@ -20,8 +22,7 @@ export default function TopicView() {
   const { genre, topic } = found;
   const index = genre.topics.findIndex((t) => t.id === topic.id);
   const prev = index > 0 ? genre.topics[index - 1] : undefined;
-  const next =
-    index < genre.topics.length - 1 ? genre.topics[index + 1] : undefined;
+  const next = index < genre.topics.length - 1 ? genre.topics[index + 1] : undefined;
 
   return (
     <div>
@@ -54,10 +55,27 @@ export default function TopicView() {
 
       {topic.questions.length > 0 && (
         <div className="topic-quiz-cta">
-          <Link
-            to={`/genre/${genre.id}/topic/${topic.id}/quiz`}
-            className="btn btn-primary"
-          >
+          {(() => {
+            const meta = MASTERY_META[masteryOf(progress)];
+            return (
+              <div className="topic-mastery">
+                <span className={`mastery-badge ${meta.className}`}>
+                  <i className="badge-icon">{meta.icon}</i>
+                  {meta.label}
+                </span>
+                {progress ? (
+                  <span className="topic-mastery-stats">
+                    ベスト {Math.round((progress.bestCorrect / progress.bestTotal) * 100)}% （直近{" "}
+                    {progress.lastCorrect}/{progress.lastTotal}・{progress.attempts}回挑戦・最終{" "}
+                    {progress.lastAt}）
+                  </span>
+                ) : (
+                  <span className="topic-mastery-stats">まだ挑戦していません</span>
+                )}
+              </div>
+            );
+          })()}
+          <Link to={`/genre/${genre.id}/topic/${topic.id}/quiz`} className="btn btn-primary">
             ✏️ このトピックの{topic.questions.length}問に挑戦
           </Link>
         </div>

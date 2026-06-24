@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import type { Question } from "../types.ts";
+import { recordResult } from "../data/progress.ts";
 
 interface PreparedChoice {
   text: string;
@@ -28,9 +29,7 @@ function prepare(questions: Question[]): PreparedQuestion[] {
     question: q.question,
     explanation: q.explanation,
     updated: q.updated,
-    choices: shuffle(
-      q.choices.map((text, i) => ({ text, correct: i === q.answer })),
-    ),
+    choices: shuffle(q.choices.map((text, i) => ({ text, correct: i === q.answer }))),
   }));
 }
 
@@ -38,9 +37,11 @@ interface QuizProps {
   questions: Question[];
   title: string;
   backTo: string;
+  /** 習熟度を記録する保存キー（総合クイズなど記録不要なら省略） */
+  progressKey?: string;
 }
 
-export default function Quiz({ questions, title, backTo }: QuizProps) {
+export default function Quiz({ questions, title, backTo, progressKey }: QuizProps) {
   // マウント時(=出題セット切り替え時)に一度だけ選択肢をシャッフル
   const prepared = useMemo(() => prepare(questions), [questions]);
 
@@ -77,6 +78,8 @@ export default function Quiz({ questions, title, backTo }: QuizProps) {
       setStep(step + 1);
       setSelected(null);
     } else {
+      // 完了時に習熟度を記録（イベントハンドラ内なので StrictMode でも一度だけ）
+      if (progressKey) recordResult(progressKey, correctCount, total);
       setFinished(true);
     }
   }
@@ -129,10 +132,7 @@ export default function Quiz({ questions, title, backTo }: QuizProps) {
       </div>
 
       <div className="progress-bar">
-        <div
-          className="progress-fill"
-          style={{ width: `${(step / total) * 100}%` }}
-        />
+        <div className="progress-fill" style={{ width: `${(step / total) * 100}%` }} />
       </div>
 
       <div className="question-card">
@@ -146,19 +146,10 @@ export default function Quiz({ questions, title, backTo }: QuizProps) {
               else cls += " is-dim";
             }
             return (
-              <button
-                key={i}
-                className={cls}
-                onClick={() => choose(i)}
-                disabled={answered}
-              >
-                <span className="choice-label">
-                  {String.fromCharCode(65 + i)}
-                </span>
+              <button key={i} className={cls} onClick={() => choose(i)} disabled={answered}>
+                <span className="choice-label">{String.fromCharCode(65 + i)}</span>
                 <span className="choice-text">{choice.text}</span>
-                {answered && choice.correct && (
-                  <span className="choice-icon">✓</span>
-                )}
+                {answered && choice.correct && <span className="choice-icon">✓</span>}
                 {answered && i === selected && !choice.correct && (
                   <span className="choice-icon">✗</span>
                 )}
@@ -168,17 +159,13 @@ export default function Quiz({ questions, title, backTo }: QuizProps) {
         </div>
 
         {answered && (
-          <div
-            className={`feedback ${
-              current.choices[selected].correct ? "ok" : "ng"
-            }`}
-          >
-            <strong>
-              {current.choices[selected].correct ? "正解！" : "不正解"}
-            </strong>
+          <div className={`feedback ${current.choices[selected].correct ? "ok" : "ng"}`}>
+            <strong>{current.choices[selected].correct ? "正解！" : "不正解"}</strong>
             <p>{current.explanation}</p>
             {current.updated && (
-              <p className="question-updated">🕒 この設問の知識は {current.updated} 時点のものです</p>
+              <p className="question-updated">
+                🕒 この設問の知識は {current.updated} 時点のものです
+              </p>
             )}
           </div>
         )}
