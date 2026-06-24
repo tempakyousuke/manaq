@@ -330,6 +330,24 @@ code {
 .lesson-body p:last-child {
   margin-bottom: 0;
 }
+.lesson-body pre {
+  background: #0c0e14;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin: 0 0 10px;
+  overflow-x: auto;
+}
+.lesson-body pre code {
+  background: none;
+  border: none;
+  border-radius: 0;
+  padding: 0;
+  color: #c8c0ff;
+  font-size: 0.85rem;
+  line-height: 1.6;
+  white-space: pre;
+}
 
 .topic-quiz-cta {
   margin-top: 22px;
