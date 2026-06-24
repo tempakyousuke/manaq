@@ -24,11 +24,12 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: npm
 
-      # package.json の devEngines が要求する npm に合わせる
+      # package.json の devEngines が要求する npm に合わせる。
+      # リポジトリ外（devEngines チェックの掛からない場所）で実行する。
       - name: Pin npm
         run: npm install -g npm@11.17.0
+        working-directory: ${{ runner.temp }}
 
       - name: Install dependencies
         run: npm ci
