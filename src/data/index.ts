@@ -2,7 +2,16 @@
 // src/data/genres/ 配下に *.json を置くだけで新しいジャンルが追加されます。
 // JSON の形式は src/data/genres/_schema.md を参照してください。
 
-import type { Genre, QuizQuestion } from "../types.ts";
+import type { Genre, Question, QuizQuestion, Topic } from "../types.ts";
+
+/** 設問の実効的な最終更新日を解決する（question → topic → genre の順で継承） */
+export function resolveUpdated(
+  question: Question,
+  topic: Topic,
+  genre: Genre,
+): string | undefined {
+  return question.updated ?? topic.updated ?? genre.updated;
+}
 
 const modules = import.meta.glob<{ default: Genre }>("./genres/*.json", {
   eager: true,
@@ -38,6 +47,7 @@ export function getAllQuestions(genreId: string): QuizQuestion[] {
   return genre.topics.flatMap((t) =>
     t.questions.map((q) => ({
       ...q,
+      updated: resolveUpdated(q, t, genre),
       topicId: t.id,
       topicTitle: t.title,
     })),

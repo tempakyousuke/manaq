@@ -4,6 +4,7 @@
   "description": "ターミナルで動くAIコーディングエージェント、Claude Codeを基礎から実践・拡張まで体系的に学びます。",
   "icon": "🤖",
   "order": 1,
+  "updated": "2026-06-23",
   "topics": [
     {
       "id": "basics",

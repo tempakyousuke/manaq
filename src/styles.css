@@ -518,6 +518,11 @@ code {
   color: var(--text);
   font-size: 0.92rem;
 }
+.feedback .question-updated {
+  margin-top: 10px;
+  color: var(--text-dim);
+  font-size: 0.8rem;
+}
 
 .quiz-actions {
   display: flex;

@@ -1,5 +1,5 @@
 import { Link, useParams } from "react-router-dom";
-import { getGenre, getAllQuestions } from "../data/index.ts";
+import { getGenre, getAllQuestions, resolveUpdated } from "../data/index.ts";
 import type { Question } from "../types.ts";
 import Quiz from "./Quiz.tsx";
 
@@ -33,7 +33,10 @@ export default function QuizPage() {
         </div>
       );
     }
-    questions = topic.questions;
+    questions = topic.questions.map((q) => ({
+      ...q,
+      updated: resolveUpdated(q, topic, genre),
+    }));
     title = topic.title;
   } else {
     questions = getAllQuestions(genre.id);

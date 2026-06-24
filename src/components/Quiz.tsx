@@ -10,6 +10,7 @@ interface PreparedChoice {
 interface PreparedQuestion {
   question: string;
   explanation: string;
+  updated?: string;
   choices: PreparedChoice[];
 }
 
@@ -26,6 +27,7 @@ function prepare(questions: Question[]): PreparedQuestion[] {
   return questions.map((q) => ({
     question: q.question,
     explanation: q.explanation,
+    updated: q.updated,
     choices: shuffle(
       q.choices.map((text, i) => ({ text, correct: i === q.answer })),
     ),
@@ -175,6 +177,9 @@ export default function Quiz({ questions, title, backTo }: QuizProps) {
               {current.choices[selected].correct ? "正解！" : "不正解"}
             </strong>
             <p>{current.explanation}</p>
+            {current.updated && (
+              <p className="question-updated">🕒 この設問の知識は {current.updated} 時点のものです</p>
+            )}
           </div>
         )}
       </div>
