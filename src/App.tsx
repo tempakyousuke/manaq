@@ -1,4 +1,4 @@
-import { Link, Outlet } from "react-router-dom";
+import { Link, Outlet, ScrollRestoration } from "react-router-dom";
 
 export default function App() {
   return (
@@ -18,6 +18,7 @@ export default function App() {
       <footer className="site-footer">
         <div className="container">学んで、4択で確かめる学習サイト · ジャンルは順次追加予定</div>
       </footer>
+      <ScrollRestoration />
     </div>
   );
 }
