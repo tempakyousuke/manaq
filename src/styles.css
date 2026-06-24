@@ -219,17 +219,63 @@ code {
   margin-bottom: 32px;
 }
 
-/* Topics */
-.topic-list {
+/* Topic grid (genre overview) */
+.topic-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+}
+.topic-tile {
   display: flex;
   flex-direction: column;
-  gap: 24px;
-}
-.topic-card {
-  background: var(--bg-soft);
+  gap: 10px;
+  background: var(--card);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 26px;
+  padding: 20px;
+  transition:
+    transform 0.15s ease,
+    border-color 0.15s ease,
+    background 0.15s ease;
+}
+.topic-tile:hover {
+  transform: translateY(-3px);
+  border-color: var(--primary);
+  background: var(--card-hover);
+}
+.topic-tile-head {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+.topic-tile-head h2 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+.topic-tile-summary {
+  margin: 0;
+  color: var(--text-dim);
+  font-size: 0.9rem;
+  flex: 1;
+}
+.topic-tile-meta {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 0.82rem;
+  color: var(--primary);
+}
+.topic-tile-arrow {
+  margin-left: auto;
+  font-size: 1.1rem;
+}
+
+/* Topic detail */
+.topic-nav {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 32px;
 }
 .topic-head {
   display: flex;

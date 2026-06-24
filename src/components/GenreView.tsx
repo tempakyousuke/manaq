@@ -1,6 +1,5 @@
 import { Link, useParams } from "react-router-dom";
 import { getGenre } from "../data/index.ts";
-import RichText from "./RichText.tsx";
 
 export default function GenreView() {
   const { genreId } = useParams();
@@ -44,39 +43,32 @@ export default function GenreView() {
         </Link>
       </div>
 
-      <div className="topic-list">
+      <p className="section-title">
+        トピック一覧（{genre.topics.length}件）
+      </p>
+
+      <div className="topic-grid">
         {genre.topics.map((topic, index) => (
-          <section key={topic.id} className="topic-card">
-            <div className="topic-head">
+          <Link
+            key={topic.id}
+            to={`/genre/${genre.id}/topic/${topic.id}`}
+            className="topic-tile"
+          >
+            <div className="topic-tile-head">
               <span className="topic-number">{index + 1}</span>
-              <div>
-                <h2>{topic.title}</h2>
-                {topic.summary && <p className="topic-summary">{topic.summary}</p>}
-              </div>
+              <h2>{topic.title}</h2>
             </div>
-
-            <div className="lessons">
-              {topic.lessons.map((lesson, i) => (
-                <article key={i} className="lesson">
-                  <h3>{lesson.heading}</h3>
-                  <div className="lesson-body">
-                    <RichText text={lesson.body} />
-                  </div>
-                </article>
-              ))}
-            </div>
-
-            {topic.questions.length > 0 && (
-              <div className="topic-quiz-cta">
-                <Link
-                  to={`/genre/${genre.id}/topic/${topic.id}/quiz`}
-                  className="btn btn-primary"
-                >
-                  ✏️ このトピックの{topic.questions.length}問に挑戦
-                </Link>
-              </div>
+            {topic.summary && (
+              <p className="topic-tile-summary">{topic.summary}</p>
             )}
-          </section>
+            <div className="topic-tile-meta">
+              <span>📖 {topic.lessons.length}レッスン</span>
+              {topic.questions.length > 0 && (
+                <span>✏️ {topic.questions.length}問</span>
+              )}
+              <span className="topic-tile-arrow">→</span>
+            </div>
+          </Link>
         ))}
       </div>
     </div>
