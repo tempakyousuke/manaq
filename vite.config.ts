@@ -2,6 +2,7 @@ import { defineConfig } from "vite-plus";
 import react from "@vitejs/plugin-react-oxc";
 
 export default defineConfig({
+  base: "/manaq/",
   plugins: [react()],
   staged: {
     "*": "vp check --fix",
