@@ -797,6 +797,277 @@
           "explanation": "タスクが変わったら`/clear`で文脈を整理すると、過去の話題に引きずられにくくなります。"
         }
       ]
+    },
+    {
+      "id": "cli-flags",
+      "title": "CLIフラグを使いこなす",
+      "summary": "ターミナルから `claude` に渡す上級フラグで、自動化やCI連携を学びます。",
+      "updated": "2026-06-25",
+      "lessons": [
+        {
+          "heading": "非対話で実行する -p",
+          "body": "`claude -p \"...\"`(`--print`)は対話画面を開かず、一度だけ実行して結果を標準出力に返します。シェルスクリプトやパイプ、CIから呼び出すときの基本フラグです。\n\n結果を機械的に処理したいときは`--output-format`を併用します。`text`(既定)・`json`・`stream-json`から選べ、`-p --output-format json`でメタ情報付きのJSONを受け取れます。"
+        },
+        {
+          "heading": "起動時に状態を指定する",
+          "body": "前回の会話を引き継ぐなら`--continue`(`-c`)で最新セッションを、`--resume`(`-r`)で特定セッションを再開します。\n\n起動時の権限モードは`--permission-mode`で指定できます(`plan` / `acceptEdits` / `bypassPermissions` など)。使うモデルは`--model sonnet`のようにエイリアスで切り替えます。"
+        },
+        {
+          "heading": "参照範囲とツールを制御する",
+          "body": "`--add-dir`は作業ディレクトリの外にあるフォルダを追加で参照可能にします。複数リポジトリにまたがる作業で便利です。\n\nツール単位の制御は`--allowedTools`(確認なしで実行を許可)と`--disallowedTools`(禁止)で行います。外部連携をその場限りで足すなら`--mcp-config`でMCPサーバーをJSONから読み込めます。"
+        },
+        {
+          "heading": "システムプロンプトを足す",
+          "body": "`--append-system-prompt`は既定のシステムプロンプトに独自の文言を追記します(`--system-prompt`は丸ごと置き換え)。特定の口調や制約を毎回効かせたいときに使います。\n\nMCPの読み込み元を限定したいときは`--strict-mcp-config`を付けると、`--mcp-config`で渡したサーバーだけを使い、設定ファイル等にある他のMCPサーバーを無視します。"
+        },
+        {
+          "heading": "自動化を安全に止める",
+          "body": "非対話の自動化では暴走を防ぐ歯止めが要ります。`--max-turns`は1回の実行で許すエージェント的ターン数の上限で、`-p`(print)モード専用です。`--max-budget-usd`は使った金額が指定額に達したら停止します。\n\nすべての確認を飛ばす`--dangerously-skip-permissions`(=bypassPermissions相当)は強力な反面危険なので、隔離された環境でのみ使います。フックやスキル・メモリ等の自動読み込みを止めて最小構成で動かす`--bare`もあります。"
+        }
+      ],
+      "questions": [
+        {
+          "question": "`claude` を対話画面を開かず、スクリプトから一度だけ実行して結果を標準出力に返すフラグはどれ?",
+          "choices": ["--print (-p)", "--resume (-r)", "--verbose", "--add-dir"],
+          "answer": 0,
+          "explanation": "`-p`(`--print`)は非対話で一度だけ実行し、結果を標準出力に返します。CIやパイプ処理の基本です。"
+        },
+        {
+          "question": "`-p` での実行結果を、メタ情報付きの構造化データとして受け取るための指定はどれ?",
+          "choices": [
+            "--output-format json",
+            "--input-format text",
+            "--verbose",
+            "--model json"
+          ],
+          "answer": 0,
+          "explanation": "`--output-format`は text / json / stream-json から選べます。`json`を指定すると機械処理しやすい構造化出力になります。"
+        },
+        {
+          "question": "作業ディレクトリの外にあるフォルダも、Claudeが参照できるように追加するフラグはどれ?",
+          "choices": ["--add-dir", "--allowedTools", "--mcp-config", "--continue"],
+          "answer": 0,
+          "explanation": "`--add-dir`は作業ディレクトリ外のフォルダを追加で参照可能にします。複数リポジトリ横断の作業で役立ちます。"
+        },
+        {
+          "question": "起動した瞬間から計画モードで始めたい。使うフラグと値の組み合わせはどれ?",
+          "choices": [
+            "--permission-mode plan",
+            "--print plan",
+            "--model plan",
+            "--output-format plan"
+          ],
+          "answer": 0,
+          "explanation": "`--permission-mode`に`plan`を渡すと、起動時から計画モードで始まります。他に`acceptEdits`や`bypassPermissions`なども指定できます。"
+        },
+        {
+          "question": "そのディレクトリで最後に行った会話を、引数なしでそのまま再開するフラグはどれ?",
+          "choices": ["--continue (-c)", "--resume (-r)", "--add-dir", "--session-id"],
+          "answer": 0,
+          "explanation": "`--continue`(`-c`)は最新の会話をそのまま再開します。特定のセッションを選んで再開するのは`--resume`(`-r`)です。"
+        },
+        {
+          "question": "指定したツールを、実行のたびに確認を求めず自動で許可するフラグはどれ?",
+          "choices": ["--allowedTools", "--disallowedTools", "--append-system-prompt", "--strict-mcp-config"],
+          "answer": 0,
+          "explanation": "`--allowedTools`は指定ツールを確認なしで実行できるようにします。逆に禁止するのは`--disallowedTools`です。"
+        },
+        {
+          "question": "既定のシステムプロンプトを丸ごと置き換えず、独自の文言を『追記』するフラグはどれ?",
+          "choices": [
+            "--append-system-prompt",
+            "--system-prompt",
+            "--mcp-config",
+            "--add-dir"
+          ],
+          "answer": 0,
+          "explanation": "`--append-system-prompt`は既定のプロンプトに追記します。丸ごと置き換えるのは`--system-prompt`です。"
+        },
+        {
+          "question": "`-p`(print)モードで、1回の実行が回せるエージェント的ターン数に上限を設けるフラグはどれ?",
+          "choices": ["--max-turns", "--max-budget-usd", "--verbose", "--strict-mcp-config"],
+          "answer": 0,
+          "explanation": "`--max-turns`は1回の実行で許すターン数の上限で、printモード専用です。暴走の歯止めになります。"
+        },
+        {
+          "question": "使った金額が一定額に達したら実行を停止させる、コスト面の歯止めになるフラグはどれ?",
+          "choices": ["--max-budget-usd", "--max-turns", "--cost", "--output-format"],
+          "answer": 0,
+          "explanation": "`--max-budget-usd`は使用額が指定のドル額に達した時点で停止します。自動化のコスト暴走を防げます。"
+        },
+        {
+          "question": "`--dangerously-skip-permissions` の説明として正しいのはどれ?",
+          "choices": [
+            "すべての確認を飛ばす強力なモードで、隔離環境以外では避ける",
+            "権限を一段階だけ厳しくする安全なモード",
+            "MCPサーバーを暗号化する設定",
+            "コストを自動で半額にする割引フラグ"
+          ],
+          "answer": 0,
+          "explanation": "`--dangerously-skip-permissions`は全確認を飛ばす(bypassPermissions相当)強力なフラグで、危険なため隔離された環境でのみ使います。"
+        }
+      ]
+    },
+    {
+      "id": "slash-power",
+      "title": "知る人ぞ知るスラッシュコマンド",
+      "summary": "あまり知られていない便利なスラッシュコマンドを学びます。",
+      "updated": "2026-06-25",
+      "lessons": [
+        {
+          "heading": "観点を絞って要約する /compact",
+          "body": "`/compact`はコンテキストを要約して空きを作りますが、後ろに指示を添えられます。たとえば`/compact バグ調査の経緯に絞って`と書くと、その観点を優先して要約してくれます。\n\n漠然と要約するより、残したい情報を指定したほうが後続の作業がスムーズです。"
+        },
+        {
+          "heading": "会話を残す・状態を見る",
+          "body": "`/export`は会話をプレーンテキストとして書き出します。記録や共有に便利です。\n\n`/cost`(`/usage`の別名)は今回の利用コストを、`/status`はバージョンやモデル・アカウント・接続状況をまとめて表示します。`/doctor`はインストールや設定の問題を診断します。"
+        },
+        {
+          "heading": "環境をセットアップする",
+          "body": "`/terminal-setup`は Shift+Enter で改行できるようにするなど、ターミナルのキーバインドを設定します。\n\n`/hooks`はフックの設定状況を、`/agents`はサブエージェントの設定を画面から確認・編集できます。"
+        }
+      ],
+      "questions": [
+        {
+          "question": "`/compact` について正しいのはどれ?",
+          "choices": [
+            "後ろに指示を添えると、その観点を優先して要約できる",
+            "引数は一切受け付けない",
+            "会話履歴を完全に削除する",
+            "モデルを切り替えるためのコマンド"
+          ],
+          "answer": 0,
+          "explanation": "`/compact 観点`のように指示を添えると、残したい情報を優先して要約できます。"
+        },
+        {
+          "question": "現在の会話をプレーンテキストとして書き出すコマンドはどれ?",
+          "choices": ["/export", "/compact", "/clear", "/status"],
+          "answer": 0,
+          "explanation": "`/export`は会話をプレーンテキストとして書き出します。記録や共有に使えます。"
+        },
+        {
+          "question": "今回のセッションでかかった利用コストを確認するコマンドはどれ?",
+          "choices": ["/cost", "/doctor", "/export", "/terminal-setup"],
+          "answer": 0,
+          "explanation": "`/cost`(`/usage`の別名)で利用コストを確認できます。"
+        },
+        {
+          "question": "Shift+Enter で改行できるよう、ターミナルのキーバインドを設定するコマンドはどれ?",
+          "choices": ["/terminal-setup", "/config", "/status", "/hooks"],
+          "answer": 0,
+          "explanation": "`/terminal-setup`はShift+Enterでの改行などターミナルのキーバインドを設定します。"
+        },
+        {
+          "question": "バージョン・使用モデル・アカウント・接続状況をまとめて確認できるコマンドはどれ?",
+          "choices": ["/status", "/cost", "/export", "/hooks"],
+          "answer": 0,
+          "explanation": "`/status`はバージョンやモデル、アカウント、接続状況をまとめて表示します。"
+        },
+        {
+          "question": "インストールや設定に問題がないかを診断するコマンドはどれ?",
+          "choices": ["/doctor", "/status", "/compact", "/agents"],
+          "answer": 0,
+          "explanation": "`/doctor`はインストールや設定の問題を診断します。"
+        },
+        {
+          "question": "設定済みのフックの内容を画面で確認するコマンドはどれ?",
+          "choices": ["/hooks", "/agents", "/doctor", "/export"],
+          "answer": 0,
+          "explanation": "`/hooks`はフックの設定状況を確認・編集できます。"
+        },
+        {
+          "question": "サブエージェントの設定を画面から管理するコマンドはどれ?",
+          "choices": ["/agents", "/hooks", "/status", "/terminal-setup"],
+          "answer": 0,
+          "explanation": "`/agents`はサブエージェントの設定を確認・編集できます。"
+        }
+      ]
+    },
+    {
+      "id": "keyboard-shortcuts",
+      "title": "キー操作の小技",
+      "summary": "対話中に効くキーボードショートカットで操作を素早くします。",
+      "updated": "2026-06-25",
+      "lessons": [
+        {
+          "heading": "モードと中断",
+          "body": "`Shift+Tab`を押すたびに権限モードが巡回切替されます(通常→自動受け入れ→計画など)。マウスを使わずモードを切り替える基本操作です。\n\n`Esc`は実行中のClaudeを中断します。そこまでの作業は保持されます。入力欄が空のまま`Esc`を2回押すと、履歴を遡って以前の状態に戻すメニュー(rewind)が開きます。"
+        },
+        {
+          "heading": "入力と表示の操作",
+          "body": "改行はターミナルによって`Option/Alt+Enter`、またはどの環境でも効く`\\`+`Enter`で入力できます。\n\n`Ctrl+R`はコマンド履歴の逆引き検索、`Ctrl+L`は画面の再描画(表示が乱れたときの復旧)、`Ctrl+O`はトランスクリプト(全文)表示の切替です。クリップボードの画像は`Ctrl+V`で貼り付けられます。"
+        },
+        {
+          "heading": "長文入力とログを扱う",
+          "body": "長いプロンプトを書くなら`Ctrl+G`(または`Ctrl+X` `Ctrl+E`)で既定のエディタが開き、そこで編集できます。\n\nやり取りの全文を見返したいときは`Ctrl+O`でトランスクリプト表示を切り替えます。これらを覚えると、ターミナル内での編集と確認が一気に楽になります。"
+        }
+      ],
+      "questions": [
+        {
+          "question": "対話中に権限モードを巡回切替するキー操作はどれ?",
+          "choices": ["Shift+Tab", "Ctrl+C", "Esc", "Ctrl+L"],
+          "answer": 0,
+          "explanation": "`Shift+Tab`を押すたびに権限モードが順番に切り替わります。"
+        },
+        {
+          "question": "実行中のClaudeを中断したいときに押すキーはどれ?(そこまでの作業は残る)",
+          "choices": ["Esc", "Ctrl+L", "Shift+Tab", "Ctrl+R"],
+          "answer": 0,
+          "explanation": "`Esc`で実行を中断できます。そこまでの作業は保持されます。"
+        },
+        {
+          "question": "入力欄が空のまま `Esc` を2回押すと開くものはどれ?",
+          "choices": [
+            "履歴を遡って以前の状態に戻すメニュー(rewind)",
+            "設定ファイルのエディタ",
+            "コスト表示",
+            "新しいセッション"
+          ],
+          "answer": 0,
+          "explanation": "入力が空の状態でEscを2回押すと、会話やコードを以前の状態に戻すrewindメニューが開きます。"
+        },
+        {
+          "question": "表示が乱れたとき、画面を再描画して復旧させるキー操作はどれ?",
+          "choices": ["Ctrl+L", "Ctrl+R", "Shift+Tab", "Option+Enter"],
+          "answer": 0,
+          "explanation": "`Ctrl+L`は画面を再描画します。表示が崩れたときの復旧に使えます。"
+        },
+        {
+          "question": "過去に入力したコマンドを逆引き検索するキー操作はどれ?",
+          "choices": ["Ctrl+R", "Ctrl+L", "Ctrl+O", "Shift+Tab"],
+          "answer": 0,
+          "explanation": "`Ctrl+R`はコマンド履歴を逆引き検索します。"
+        },
+        {
+          "question": "どのターミナルでも確実に改行を入力できる方法はどれ?",
+          "choices": [
+            "`\\` を打ってから Enter",
+            "Tab を2回押す",
+            "Ctrl+L",
+            "Shift+Tab"
+          ],
+          "answer": 0,
+          "explanation": "`\\`+`Enter`はどの環境でも改行になります。ターミナルによっては`Option/Alt+Enter`も使えます。"
+        },
+        {
+          "question": "クリップボードにある画像を貼り付けるキー操作はどれ?",
+          "choices": ["Ctrl+V", "Ctrl+R", "Ctrl+O", "Esc"],
+          "answer": 0,
+          "explanation": "`Ctrl+V`でクリップボードの画像を貼り付けられます。"
+        },
+        {
+          "question": "やり取りの全文(トランスクリプト)表示を切り替えるキー操作はどれ?",
+          "choices": ["Ctrl+O", "Ctrl+L", "Ctrl+R", "Shift+Tab"],
+          "answer": 0,
+          "explanation": "`Ctrl+O`はトランスクリプト(全文)表示の切替です。"
+        },
+        {
+          "question": "長いプロンプトを既定のエディタで編集したいときのキー操作はどれ?",
+          "choices": ["Ctrl+G", "Ctrl+V", "Ctrl+L", "Esc を2回"],
+          "answer": 0,
+          "explanation": "`Ctrl+G`(または`Ctrl+X` `Ctrl+E`)で既定のエディタが開き、長文を編集できます。"
+        }
+      ]
     }
   ]
 }
